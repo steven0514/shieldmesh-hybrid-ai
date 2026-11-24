@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+node_modules/
+.firebase/
+.env
+.env.*
+*keypair*.json
+.DS_Store
+Thumbs.db
+demo/*.mp4
+demo/*.webm
+

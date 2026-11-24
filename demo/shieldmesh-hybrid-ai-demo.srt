@@ -1,0 +1,23 @@
+1
+00:00:00,000 --> 00:00:17,304
+ShieldMesh Hybrid AI — Built with Firebase AI Logic Hybrid Inference SDK
+
+2
+00:00:17,754 --> 00:00:34,650
+PREFER_ON_DEVICE: Masks Email, Phone, Card & Token locally before inference
+
+3
+00:00:35,100 --> 00:00:45,396
+100% Redacted Payload: [REDACTED_CARD], [REDACTED_EMAIL], [REDACTED_SECRET]
+
+4
+00:00:45,846 --> 00:01:00,606
+Cloud Fallback: Flags 5 indirect prompt-injection vectors (Risk Score: 100/100)
+
+5
+00:01:01,056 --> 00:01:13,704
+ONLY_ON_DEVICE: Enforces strict zero-egress policy when local Nano is unavailable
+
+6
+00:01:14,154 --> 00:01:29,010
+Browser-Local Firebase Config + Live response.inferenceSource Telemetry

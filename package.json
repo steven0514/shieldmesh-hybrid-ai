@@ -1,0 +1,14 @@
+{
+  "name": "shieldmesh-hybrid-ai",
+  "version": "1.0.0",
+  "description": "Local-First Privacy & Prompt-Injection Firewall powered by Firebase AI Logic Hybrid Inference SDK (Chrome Gemini Nano + Cloud Gemini Fallback).",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "python -m http.server 8788 --bind 127.0.0.1",
+    "test": "python -m unittest discover -s tests -p \"test_*.py\" -v"
+  },
+  "dependencies": {
+    "firebase": "^12.5.0"
+  }
+}

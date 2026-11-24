@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShieldMesh Hybrid AI — Local-First Privacy & Prompt Firewall</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">🛡️</div>
+      <div>
+        <h1>ShieldMesh Hybrid AI</h1>
+        <p class="subtitle">Firebase AI Logic Hybrid Inference SDK · On-Device Gemini Nano + Cloud Fallback</p>
+      </div>
+    </div>
+    <div class="status-pills">
+      <span id="pill-nano" class="pill pill-muted">Nano: Detecting...</span>
+      <span id="pill-net" class="pill pill-ok">Online</span>
+      <span id="pill-sdk" class="pill pill-warn">SDK: Zero-Key Preview</span>
+      <button id="btn-open-config" class="btn btn-secondary">⚙️ Firebase Config</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel main-panel">
+      <div class="section-head">
+        <h2>1. Hybrid Inference Routing Mode (<code>firebase/ai</code>)</h2>
+        <span class="hint">Switch official <code>InferenceMode</code> policies in real time</span>
+      </div>
+
+      <div class="mode-grid" id="mode-grid">
+        <button class="mode-card active" data-mode="prefer_on_device">
+          <div class="mode-title">⚡ PREFER_ON_DEVICE</div>
+          <div class="mode-desc">Gemini Nano first; automatic Cloud fallback if unavailable.</div>
+        </button>
+        <button class="mode-card" data-mode="only_on_device">
+          <div class="mode-title">🔒 ONLY_ON_DEVICE</div>
+          <div class="mode-desc">Strict local-only privacy. Zero cloud egress ever.</div>
+        </button>
+        <button class="mode-card" data-mode="prefer_in_cloud">
+          <div class="mode-title">☁️ PREFER_IN_CLOUD</div>
+          <div class="mode-desc">Cloud Gemini first; seamless on-device fallback offline.</div>
+        </button>
+        <button class="mode-card" data-mode="only_in_cloud">
+          <div class="mode-title">🚀 ONLY_IN_CLOUD</div>
+          <div class="mode-desc">Force cloud-hosted Gemini model for heavy reasoning.</div>
+        </button>
+      </div>
+
+      <div class="section-head" style="margin-top:18px;">
+        <h2>2. Privacy Firewall Input &amp; Task</h2>
+        <div class="preset-row" id="preset-row"></div>
+      </div>
+
+      <textarea id="input-text" rows="7" placeholder="Paste customer support tickets, untrusted emails, or compliance notes here..."></textarea>
+
+      <div class="controls-bar">
+        <div class="control-group">
+          <label for="task-select">Task:</label>
+          <select id="task-select">
+            <option value="redact_summarize">Redact PII &amp; Summarize</option>
+            <option value="injection_audit">Prompt-Injection Firewall Audit</option>
+            <option value="compliance_remediation">Hybrid Compliance Remediation</option>
+          </select>
+        </div>
+
+        <label class="checkbox-label">
+          <input type="checkbox" id="chk-shield" checked />
+          <span>Local Privacy Shield (Mask PII before Cloud Fallback)</span>
+        </label>
+
+        <button id="btn-run" class="btn btn-primary">▶ Run Hybrid Inference</button>
+      </div>
+
+      <div id="prescan-bar" class="prescan-bar hidden"></div>
+
+      <div class="result-card" id="result-card">
+        <div class="result-header">
+          <span id="res-source-badge" class="source-badge source-idle">READY</span>
+          <span id="res-meta" class="muted">Click "Run Hybrid Inference" or pick a preset above.</span>
+        </div>
+        <pre id="res-output" class="result-output">Waiting for your first Hybrid AI inspection...</pre>
+        <details class="sanitized-details">
+          <summary>🔍 Inspect Local-Redacted Payload Sent to Model</summary>
+          <pre id="res-sanitized" class="sanitized-pre">(No payload processed yet)</pre>
+        </details>
+      </div>
+    </section>
+
+    <aside class="panel telemetry-panel">
+      <div class="section-head">
+        <h2>📊 Hybrid Telemetry</h2>
+        <button id="btn-export-telemetry" class="btn btn-ghost">Export JSON</button>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-label">On-Device Ratio</div>
+          <div class="kpi-value" id="kpi-ratio">0%</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Avg Latency</div>
+          <div class="kpi-value" id="kpi-latency">0 ms</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">PII / Injections Blocked</div>
+          <div class="kpi-value" id="kpi-blocked">0</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Cloud Tokens Saved</div>
+          <div class="kpi-value" id="kpi-tokens">0</div>
+        </div>
+      </div>
+
+      <div class="split-bar-wrap">
+        <div class="split-labels">
+          <span class="text-green">On-Device (<span id="cnt-ondevice">0</span>)</span>
+          <span class="text-cyan">In-Cloud (<span id="cnt-cloud">0</span>)</span>
+        </div>
+        <div class="split-bar">
+          <div id="bar-ondevice" class="bar-fill-green" style="width: 50%"></div>
+        </div>
+      </div>
+
+      <h3 class="subhead">Live Routing Trace (<code>response.inferenceSource</code>)</h3>
+      <div id="trace-list" class="trace-list">
+        <div class="muted">No inference runs yet.</div>
+      </div>
+
+      <div class="sdk-snippet">
+        <h3 class="subhead">Firebase AI Logic Integration</h3>
+        <pre>const ai = getAI(app, {
+  backend: new GoogleAIBackend()
+});
+const model = getGenerativeModel(ai, {
+  mode: InferenceMode.PREFER_ON_DEVICE
+});
+const res = await model.generateContent(p);
+// res.response.inferenceSource</pre>
+      </div>
+    </aside>
+  </main>
+
+  <div id="config-modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="section-head">
+        <h2>⚙️ Firebase AI Logic Web Config (Browser-Local)</h2>
+        <button id="btn-close-config" class="btn btn-ghost">✕</button>
+      </div>
+      <p class="muted" style="margin-bottom:12px;">
+        Stored strictly in your browser <code>localStorage</code>. Never hardcoded or sent to any third-party server.
+      </p>
+      <div class="form-grid">
+        <label>API Key <input id="cfg-apikey" type="password" placeholder="Firebase Web API Key" /></label>
+        <label>Project ID <input id="cfg-project" type="text" placeholder="my-firebase-project-id" /></label>
+        <label>Auth Domain <input id="cfg-domain" type="text" placeholder="my-project.firebaseapp.com" /></label>
+        <label>App ID <input id="cfg-appid" type="text" placeholder="1:123456:web:abcdef" /></label>
+        <label>Cloud Fallback Model <input id="cfg-model" type="text" value="gemini-2.5-flash" /></label>
+      </div>
+      <div class="modal-actions">
+        <button id="btn-clear-config" class="btn btn-danger">Clear Local Config</button>
+        <button id="btn-save-config" class="btn btn-primary">Save &amp; Enable Live SDK</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>
